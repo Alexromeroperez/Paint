@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+    <item android:id="@+id/circulo"
+        android:title=""
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_panorama_fish_eye_white_24dp"
+        />
+
+    <item android:id="@+id/rectangulo"
+        android:title=""
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_crop_landscape_white_24dp"
+        />
+    <item android:id="@+id/linea"
+        android:title=""
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_remove_white_24dp"
+        />
+
+    <item android:id="@+id/libre"
+        android:title=""
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_gesture_white_24dp"
+        />
+
+    <item android:id="@+id/color"
+        android:title=""
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_color_lens_white_24dp"
+        />
+
+    <item android:id="@+id/cargar"
+        android:title="Cargar"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_file_download_white_24dp"
+        />
+
+    <item android:id="@+id/limpiar"
+        android:title="Limpiar"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/relleno"
+        android:title="Relleno"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/guardar"
+        android:title="guardar"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_save_white_24dp"
+        />
+</menu>
