@@ -1,18 +1,26 @@
 package com.arp.paint;
 
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import java.io.File;
@@ -24,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private Vista vista;
     private Paint pincel;
     private RelativeLayout r;
+    private final int CARGAR=1;
     private boolean relleno=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,32 +122,57 @@ public class MainActivity extends AppCompatActivity {
         colorPickerDialog.show();
     }
 
-    private void guardar(){
-        try {
-            File carpeta=new File(getExternalFilesDir(null).getPath());
-            File archivo = new File(carpeta, "dibujo.png");
-            FileOutputStream fos = null;
-            fos = new FileOutputStream(archivo);
-            vista.getMapaDeBits().createBitmap(vista.getWidth(), vista.getHeight(),
-                    Bitmap.Config.ARGB_8888).compress(
-                    Bitmap.CompressFormat.PNG, 90, fos);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == CARGAR && resultCode == Activity.RESULT_OK){
+            Uri uri = data.getData();
+            Bitmap bitmap;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            } catch (Exception ex){
+                bitmap = null;
+            }
+            vista.cargarImagen(bitmap);
         }
+    }
+
+    private void guardar(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Guardar");
+        LayoutInflater inflater = LayoutInflater.from(this);
+        final View view = inflater.inflate(R.layout.dialog_guardar, null);
+        alert.setView(view);
+        final EditText et=(EditText)view.findViewById(R.id.etNombre);
+        alert.setPositiveButton(android.R.string.ok,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String nombre = et.getText().toString();
+                        Bitmap mapaDeBits = vista.getMapaDeBits();
+                        File carpeta = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getPath());
+                        File archivo = new File(carpeta, nombre + ".PNG");
+                        try {
+                            FileOutputStream fos = new FileOutputStream(archivo);
+                            mapaDeBits.compress(Bitmap.CompressFormat.PNG, 90, fos);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                        Uri uri = Uri.fromFile(archivo);
+                        intent.setData(uri);
+                        getApplicationContext().sendBroadcast(intent);
+                    }
+
+    });
+        alert.setNegativeButton(android.R.string.no, null);
+        alert.show();
 
     }
 
     private void cargar(){
-        File carpeta=new File(getExternalFilesDir(null).getPath());
-        File archivo = new File (carpeta, "dibujo.png");
-        Bitmap imagenFondo = Bitmap.createBitmap(vista.getWidth(), vista.getHeight(), Bitmap.Config.ARGB_8888);
-        if (archivo.exists()){
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inMutable=true;
-            imagenFondo=BitmapFactory.decodeFile(archivo.getAbsolutePath(),options);
-            vista.setMapaDeBits(imagenFondo);
-        }
-        Canvas lienzoFondo = new Canvas(imagenFondo);
-        vista.setLienzoFondo(lienzoFondo);
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        galleryIntent.setType("image/*");
+        Intent i = Intent.createChooser(galleryIntent, "imagen");
+        startActivityForResult(i, CARGAR);
     }
 }

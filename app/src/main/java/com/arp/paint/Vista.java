@@ -23,6 +23,7 @@ public class Vista extends View {
     private Paint pincel;
     private Path rectaPoligonal=new Path();
 
+
     public Vista(Context context) {
         super(context);
     }
@@ -190,6 +191,12 @@ public class Vista extends View {
         lienzoFondo = new Canvas(mapaDeBits);
         invalidate();
         return;
+    }
+
+    public void cargarImagen(Bitmap bm){
+        float scaleFactor = Math.min( (float) this.getWidth() /  bm.getWidth(),(float)this.getHeight() /  bm.getHeight() );
+        Bitmap scaled = Bitmap.createScaledBitmap( bm,(int)(scaleFactor * bm.getWidth()),(int)(scaleFactor * bm.getHeight()),true );
+        lienzoFondo.drawBitmap(scaled, 0, 0, pincel);
     }
 
 }
